@@ -39,12 +39,14 @@ def clear_table():
 def import_games(csv_file):
   df = pd.read_csv(csv_file)
 
+  name_col = next((col for col in ["Name", "name"] if col in df.columns), None)
+
   bgg_col = next((col for col in ["BGG ID", "BGGID", "Bgg Id", "bgg_id", "bggId" ,"bggid"] if col in df.columns), None)
 
   owner_col = next((col for col in ["Owner", "owner"] if col in df.columns), None)  
 
-  if not bgg_col or not owner_col:
-    print("CSV file must contain 'BGG ID' and 'Owner' columns.")
+  if not name_col or not bgg_col or not owner_col:
+    print("CSV file must contain 'Name', 'BGG ID' and 'Owner' columns.")
     return
   
   # Overwrite: clear entire table
@@ -56,6 +58,7 @@ def import_games(csv_file):
   success = 0
   for _, row in df.iterrows():
     row_data = {
+      "Name": str(row[name_col]),
       "BGG ID": int(row[bgg_col]),
       "Owner": str(row[owner_col])
     }
